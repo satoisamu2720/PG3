@@ -1,41 +1,36 @@
 #include <stdio.h>
-template <typename T>
-T minValue(int a, int b) {
-    int min_value; /* 最小値 */
 
-    
-    if (a < b) {
-        min_value = a;
-    } else {
-        min_value = b;
+template<typename T1, typename T2>
+
+T1 Min(T1 a, T2 b) {
+    if (static_cast<T1>(a) <= static_cast<T2>(b)) {
+        return static_cast<T1>(a);
     }
-
-    return min_value;
+    else {
+        return static_cast<T1>(b);
+    }
 }
 
-int main() {
-    printf("%d\n", minValue<int>(114, 514));
-    printf("%f\n", minValue<float>(11.4f, 51.4f));
-    printf("%f\n", minValue<double>(11.4f, 51.4f));
-    printf("数字以外は代入出来ません\n", minValue<char>(11.4f, 51.4f));
+template <>
+char Min<char>(char a, char b) {
+    return printf("数字以外は代入できません\n");
+}
+
+int main(void) {
+    printf("%d\n", Min<int, int>(114, 514));
+    printf("%f\n", Min<float, float>(11.4f, 51.4f));
+    printf("%lf\n", Min<double, double>(11.4f, 51.4f));
+    printf("%c\n", Min<char, char>(11.4f, 51.4f));
 
     return 0;
 }
 
 
-//template <typename T>
-//T add(T a, T b) {
-//	return a + b;
-//}
-//
-//template<>
-//float add<float>(float a, float b) {
-//	return a - b;
-//}
-//
-//float add(float a, float b) {
-//	return a * b;
-//}
+
+
+
+
+
 
 
 
