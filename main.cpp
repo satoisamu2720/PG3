@@ -1,35 +1,37 @@
 #include <stdio.h>
 
-template<typename T1, typename T2>
-
-T1 Min(T1 a, T2 b) {
-    if (static_cast<T1>(a) <= static_cast<T2>(b)) {
-        return static_cast<T1>(a);
-    }
-    else {
-        return static_cast<T1>(b);
-    }
+int TypicallyCalc(int time) {
+	return 1072 * time;
 }
 
-template <>
-char Min<char>(char a, char b) {
-    return printf("数字以外は代入できません\n");
+int RecursiveCalc(int time, int HourlyWage = 100) {
+	if (time == 1) {
+		return HourlyWage;
+	}
+	return (RecursiveCalc(time - 1, HourlyWage * 2 - 50));
 }
 
-int main(void) {
-    printf("%d\n", Min<int, int>(114, 514));
-    printf("%f\n", Min<float, float>(11.4f, 51.4f));
-    printf("%lf\n", Min<double, double>(11.4f, 51.4f));
-    printf("%c\n", Min<char, char>(11.4f, 51.4f));
-
-    return 0;
+void ComparisonWage(int time) {
+	int Typically = TypicallyCalc(time);
+	int Recursive = RecursiveCalc(time);
+	printf("一般的な賃金 : %d\n", Typically);
+	printf("再帰的な賃金 : %d\n", Recursive);
+	if (Typically > Recursive) {
+		printf("一般的な賃金体系");
+	}
+	else if (Typically < Recursive) {
+		printf("再帰的な賃金体系");
+	}
+	else if (Typically == Recursive) {
+		printf("同じ");
+	}
 }
 
+int main() {
+	ComparisonWage(9);
 
-
-
-
-
+	return 0;
+}
 
 
 
