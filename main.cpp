@@ -3,15 +3,10 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include <functional>
 
 std::random_device seed_Gen;
 std::mt19937 mtrand(seed_Gen());
-
-typedef int (*Pfunc)();
-
-int Dice() {
-	return std::uniform_int_distribution<int>(1, 6)(seed_Gen);
-}
 
 void DiceResult(int diceNumber) {
 	//ãÙêî
@@ -24,27 +19,25 @@ void DiceResult(int diceNumber) {
 	}
 }
 
-int SetTimeOut(Pfunc collback, int second) {
+int SetTimeOut(std::function<int()> collback, int second) {
 	std::this_thread::sleep_for(std::chrono::seconds(second));
 	return collback();
-
 }
 
 int main() {
 
-	Pfunc p;
-	p = Dice;
+	std::function<int()> fx = []() {return std::uniform_int_distribution<int>(1, 6)(seed_Gen); };
 	int Result;
 	int Answer;
 
 	while (true) {
 
-		printf("1:îºÅ@2:íö\n");
+		printf("1:îº(äÔêî)Å@2:íö(ãÙêî)\n");
 		std::cin >> Answer;
 		if (Answer == 0) {
 			break;
 		}
-		Result = SetTimeOut(p, 3);
+		Result = SetTimeOut(fx, 3);
 		printf("ìöÇ¶ : %d\n", Result);
 		DiceResult(Result);
 		if (Result % 2 == 0 && Answer == 2) {
