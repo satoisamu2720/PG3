@@ -1,62 +1,63 @@
 #include <stdio.h>
+#include <random>
+#include <chrono>
+#include <thread>
+#include <iostream>
 
+std::random_device seed_Gen;
+std::mt19937 mtrand(seed_Gen());
 
-int Recursive(int h, int j, int m) {
+typedef int (*Pfunc)();
 
-	if (h <= 0) {
-		//処理が成功した場合
-		return j;
-	}
-
-	return Recursive(h - 1, j += m, m * 2 - 50);
-
+int Dice() {
+	return std::uniform_int_distribution<int>(1, 6)(seed_Gen);
 }
 
-
-
-int TypicallyCalc(int time) {
-	return 1072 * time;
-
+void DiceResult(int diceNumber) {
+	//偶数
+	if (diceNumber % 2 == 0) {
+		printf("結果　丁\n");
+	}
+	// 奇数
+	if (diceNumber % 2 == 1) {
+		printf("結果　半\n");
+	}
 }
 
-int RecursiveCalc(int time,int j, int HourlyWage) {
+int SetTimeOut(Pfunc collback, int second) {
+	std::this_thread::sleep_for(std::chrono::seconds(second));
+	return collback();
 
-	/*if (time == 1) {
-		return HourlyWage;
-	}*/
-	if (time <= 0) {
-		//処理が成功した場合
-		return j;
-	}
-	return (RecursiveCalc(time - 1,j+= HourlyWage, HourlyWage * 2 - 50));
-}
-
-void ComparisonWage(int time, int j, int HourlyWage) {
-	int Typically = TypicallyCalc(time);
-	int Recursive = RecursiveCalc(time,j, HourlyWage);
-	printf("\n一般的な賃金 : %d\n", Typically);
-	printf("再帰的な賃金 : %d\n", Recursive);
-	if (Typically > Recursive) {
-		printf("一般的な賃金体系");
-	}
-	else if (Typically < Recursive) {
-		printf("再帰的な賃金体系");
-	}
-	else if (Typically == Recursive) {
-		printf("同じ");
-	}
 }
 
 int main() {
-	
 
-	ComparisonWage(4,0,100);
+	Pfunc p;
+	p = Dice;
+	int Result;
+	int Answer;
+
+	while (true) {
+
+		printf("1:半　2:丁\n");
+		std::cin >> Answer;
+		if (Answer == 0) {
+			break;
+		}
+		Result = SetTimeOut(p, 3);
+		printf("答え : %d\n", Result);
+		DiceResult(Result);
+		if (Result % 2 == 0 && Answer == 2) {
+			printf("勝ち\n");
+		}
+		else if (Result % 2 == 1 && Answer == 1) {
+			printf("勝ち\n");
+		}
+		else {
+			printf("負け\n");
+		}
+
+	}
 
 	return 0;
-
 }
-
-
-
-
-
