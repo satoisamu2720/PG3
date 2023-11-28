@@ -132,6 +132,7 @@
     <ClCompile Include="MyClass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Base.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="MyClass.h" />
   </ItemGroup>
