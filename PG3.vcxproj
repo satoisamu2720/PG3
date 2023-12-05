@@ -128,18 +128,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Ant.cpp" />
+    <ClCompile Include="Circle.cpp" />
     <ClCompile Include="Elephantrs.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyClass.cpp" />
+    <ClCompile Include="Rectangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ant.h" />
     <ClInclude Include="Base.h" />
+    <ClInclude Include="Circle.h" />
     <ClInclude Include="Creature.h" />
     <ClInclude Include="Elephantrs.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="MyClass.h" />
+    <ClInclude Include="Rectangle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,14 +1,19 @@
-#include "Ant.h"
-#include "Elephantrs.h"
-#include "Creature.h"
+#include "Rectangle.h"
+#include "Circle.h"
 
-int main() {
-	Creature* Charactor[2];
-	Charactor[0] = new Ant();
-	Charactor[1] = new Elephantrs();
+int main(void) {
 
-	Charactor[0]->Size();
-	Charactor[1]->Size();
+	IShape* rectangle;
+	IShape* circle;
+
+	rectangle = new Rectangle(2.0f);
+	circle = new Circle(2.0f);
+
+	rectangle->size();
+	circle->size();
+
+	rectangle->draw();
+	circle->draw();
 
 	return 0;
 }
