@@ -209,11 +209,39 @@ Vector3 VectorTransform(const Vector3& vector, const Matrix4x4& matrix) {
 	result.z /= w;
 	return result;
 }
-Quaternion rotation = MakeRotateAxisAngleQuaternion(Normalize(Vector3{1.0f, 0.4f, -0.2f}), 0.45f);
-Vector3 pointY = {2.1f, -0.9f, 1.3f};
-Matrix4x4 rotateMatrix = MakeRotateMatrix(rotation);
-Vector3 rotateByQuaternion = RotateVector(pointY, rotation);
-Vector3 rotateByMatrix = VectorTransform(pointY, rotateMatrix);
+// MT4_01_5
+Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t) {
+	Quaternion result;
+	Quaternion Localq0 = q0;
+	Quaternion Localq1 = q1;
+	// q0とq1の内積
+	float dot = Localq0.x * Localq1.x + Localq0.y * Localq1.y + Localq0.z * Localq1.z;
+	if (dot < 0.0f) {
+		// もう片方の回転を利用
+		Localq0 = {-q0.x, -q0.y, -q0.z, -q0.w};
+		// 内積も反転
+		dot = -dot;
+	}
+	// なす角を求める
+	float theta = acosf(dot);
+
+	float scale0 = sinf((1 - t) * theta) / sinf(theta);
+	float scale1 = sinf(t * theta) /sinf(theta);
+	result.x = scale0 * Localq0.x + scale1 * Localq1.x;
+	result.y = scale0 * Localq0.y + scale1 * Localq1.y;
+	result.z = scale0 * Localq0.z + scale1 * Localq1.z;
+	result.w = scale0 * Localq0.w + scale1 * Localq1.w;
+
+	return result;
+}
+Quaternion rotation0 = MakeRotateAxisAngleQuaternion({0.71f, 0.71f, 0.0f}, 0.3f);
+Quaternion rotation1 = MakeRotateAxisAngleQuaternion({0.71f, 0.0f, 0.71f}, 3.141592f);
+
+Quaternion interpolate0 = Slerp(rotation0, rotation1, 0.0f);
+Quaternion interpolate1 = Slerp(rotation0, rotation1, 0.3f);
+Quaternion interpolate2 = Slerp(rotation0, rotation1, 0.5f);
+Quaternion interpolate3 = Slerp(rotation0, rotation1, 0.7f);
+Quaternion interpolate4 = Slerp(rotation0, rotation1, 1.0f);
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -247,27 +275,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
-		ImGui::Begin("MT4_01_04");
-		ImGui::Text("rotation");
-		ImGui::Text("%4.2f %4.2f %4.2f %4.2f", rotation.x, rotation.y, rotation.z, rotation.w);
-		ImGui::Text("rotateMatrix");
+		ImGui::Begin("MT4_01_05");
+		ImGui::Text("interpolate0");
 		ImGui::Text(
-		    "%4.3f %4.3f %4.3f %4.3f", rotateMatrix.m[0][0], rotateMatrix.m[0][1],
-		    rotateMatrix.m[0][2], rotateMatrix.m[0][3]);
+		    "%4.2f %4.2f %4.2f %4.2f", interpolate0.x, interpolate0.y, interpolate0.z,
+		    interpolate0.w);
+		ImGui::Text("interpolate1");
 		ImGui::Text(
-		    "%4.3f %4.3f %4.3f %4.3f", rotateMatrix.m[1][0], rotateMatrix.m[1][1],
-		    rotateMatrix.m[1][2], rotateMatrix.m[1][3]);
+		    "%4.2f %4.2f %4.2f %4.2f", interpolate1.x, interpolate1.y, interpolate1.z,
+		    interpolate1.w);
+		ImGui::Text("interpolate2");
 		ImGui::Text(
-		    "%4.3f %4.3f %4.3f %4.3f", rotateMatrix.m[2][0], rotateMatrix.m[2][1],
-		    rotateMatrix.m[2][2], rotateMatrix.m[2][3]);
+		    "%4.2f %4.2f %4.2f %4.2f", interpolate2.x, interpolate2.y, interpolate2.z,
+		    interpolate2.w);
+		ImGui::Text("interpolate3");
 		ImGui::Text(
-		    "%4.3f %4.3f %4.3f %4.3f", rotateMatrix.m[3][0], rotateMatrix.m[3][1],
-		    rotateMatrix.m[3][2], rotateMatrix.m[3][3]);
-		ImGui::Text("rotateByQuaternion");
+		    "%4.2f %4.2f %4.2f %4.2f", interpolate3.x, interpolate3.y, interpolate3.z,
+		    interpolate3.w);
+		ImGui::Text("interpolate4");
 		ImGui::Text(
-		    "%4.2f %4.2f %4.2f", rotateByQuaternion.x, rotateByQuaternion.y, rotateByQuaternion.z);
-		ImGui::Text("rotateByMatrix");
-		ImGui::Text("%4.2f %4.2f %4.2f", rotateByMatrix.x, rotateByMatrix.y, rotateByMatrix.z);
+		    "%4.2f %4.2f %4.2f %4.2f", interpolate4.x, interpolate4.y, interpolate4.z,
+		    interpolate4.w);
 		ImGui::End();
 		///
 		/// ↑描画処理ここまで
