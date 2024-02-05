@@ -11,9 +11,13 @@
 //std::mt19937 mtrand(seed_Gen());
 
 int main() {
-	Enemy* enemy = new Enemy();
+	Enemy* enemy_ = new Enemy();
 
-	enemy->Update();
+while (enemy_->GetCount() == false) {
+		enemy_->Update();
+	}
+
+
 
 	return 0;
 }

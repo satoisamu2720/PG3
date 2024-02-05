@@ -20,11 +20,13 @@ public:
 
 	void Shot();
 
+	bool GetCount() { return count; }
+
 private:
 
 	static void (Enemy::* spFuncTable[])();
 	size_t state;
-	
-
+	EnemyState phase_ = EnemyState::Approach;
+	bool count = false;
 };
 

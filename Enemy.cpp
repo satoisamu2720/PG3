@@ -1,31 +1,28 @@
 #include "Enemy.h"
-
+#include <Windows.h>
 void (Enemy::* Enemy::spFuncTable[])() = {
 	&Enemy::Approach,
 	&Enemy::Shot,
 	&Enemy::Leave
 };
 void Enemy::Update() {
-	for (int i = 0; i < 3; i++) {
-		(this->*spFuncTable[i])();
-	}
+		(this->*spFuncTable[static_cast<size_t>(phase_)])();
 }
 
 void Enemy::Approach() {
 	printf("ê⁄ãﬂ\n");
-	static_cast<size_t>(EnemyState::Approach);
-	std::this_thread::sleep_for(std::chrono::seconds(2));
+	Sleep(3 * 600);
+	phase_ = EnemyState::Shot;
 }
 
 void Enemy::Shot() {
 	printf("éÀåÇ\n");
-	static_cast<size_t>(EnemyState::Shot);
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+	Sleep(3 * 600);
+	phase_ = EnemyState::Leave;
 }
 
 void Enemy::Leave() {
 	printf("ó£íE\n");
-	static_cast<size_t>(EnemyState::Leave);
-	std::this_thread::sleep_for(std::chrono::seconds(2));
+	count = true;
 }
 
