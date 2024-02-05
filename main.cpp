@@ -1,7 +1,7 @@
 #include <Novice.h>
 #include <math.h>
 #include <stdio.h>
-
+#include "imgui.h"
 
 
 const char kWindowTitle[] = "";
@@ -17,7 +17,12 @@ struct Vector3 {
 struct Matrix4x4 final {
 	float m[4][4];
 };
-
+struct Quaternion {
+	float x;
+	float y;
+	float z;
+	float w;
+};
 Matrix4x4 MakeIdentity4x4() { return {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}; }
 
 float Dot(const Vector3& v1, const Vector3& v2) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
@@ -87,27 +92,82 @@ Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to) {
 
 	return result;
 }
-static const int kRowHeight = 20;
-static const int kColummWidth = 60;
 
-void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* label) {
-	for (int row = 0; row < 4; ++row) {
-		for (int columm = 0; columm < 4; ++columm) {
-			Novice::ScreenPrintf(
-			    x + columm * kColummWidth, y + row * kRowHeight, "%6.3f", matrix.m[row][columm],
-			    label);
-		}
-	}
+// MT4_01_03
+Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs) {
+	Quaternion result;
+	Vector3 cross = Cross({lhs.x, lhs.y, lhs.z}, {rhs.x, rhs.y, rhs.z});
+	float dot = Dot({lhs.x, lhs.y, lhs.z}, {rhs.x, rhs.y, rhs.z});
+	result.x = cross.x + rhs.w * lhs.x + lhs.w * rhs.x;
+	result.y = cross.y + rhs.w * lhs.y + lhs.w * rhs.y;
+	result.z = cross.z + rhs.w * lhs.z + lhs.w * rhs.z;
+	result.w = lhs.w * rhs.w - dot;
+
+	return result;
 }
-Vector3 from0 = Normalize(Vector3{1.0f, 0.7f, 0.5f});
-Vector3 to0 = -from0;
-Vector3 from1 = Normalize(Vector3{-0.6f, 0.9f, 0.2f});
-Vector3 to1 = Normalize(Vector3{0.4f, 0.7f, -0.5});
 
-Matrix4x4 rotateMatrix0 = DirectionToDirection(
-    Normalize(Vector3{1.0f, 0.0f, 0.0f}), Normalize(Vector3{-1.0f, 0.0f, 0.0f}));
-Matrix4x4 rotateMatrix1 = DirectionToDirection(from0, to0);
-Matrix4x4 rotateMatrix2 = DirectionToDirection(from1, to1);
+Quaternion IdentityQuaternion() { return Quaternion({0.0f, 0.0f, 0.0f, 1.0f}); }
+
+Quaternion Conjugate(const Quaternion& quaternion) {
+	return Quaternion(
+	    {quaternion.x * -1.0f, quaternion.y * -1.0f, quaternion.z * -1.0f, quaternion.w});
+}
+
+float Norm(const Quaternion& quaternion) {
+	return sqrtf(
+	    quaternion.x * quaternion.x + quaternion.y * quaternion.y + quaternion.z * quaternion.z +
+	    quaternion.w * quaternion.w);
+}
+
+Quaternion Normalize(const Quaternion& quaternion) {
+	Quaternion result{};
+	float norm = Norm(quaternion);
+	if (norm != 0.0f) {
+		result.x = quaternion.x / norm;
+		result.y = quaternion.y / norm;
+		result.z = quaternion.z / norm;
+		result.w = quaternion.w / norm;
+	}
+	return result;
+}
+
+Quaternion Inverse(const Quaternion& quaternion) {
+	Quaternion result{};
+	float norm = Norm(quaternion);
+	norm = norm * norm;
+	Quaternion conj = Conjugate(quaternion);
+	if (norm != 0.0f) {
+		result.x = conj.x / norm;
+		result.y = conj.y / norm;
+		result.z = conj.z / norm;
+		result.w = conj.w / norm;
+	}
+	return result;
+}
+//static const int kRowHeight = 20;
+//static const int kColummWidth = 60;
+//
+//void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* label) {
+//	for (int row = 0; row < 4; ++row) {
+//		for (int columm = 0; columm < 4; ++columm) {
+//			Novice::ScreenPrintf(
+//			    x + columm * kColummWidth, y + row * kRowHeight, "%6.3f", matrix.m[row][columm],
+//			    label);
+//		}
+//	}
+//}
+Quaternion q1 = {2.0f, 3.0f, 4.0f, 1.0f};
+Quaternion q2 = {1.0f, 3.0f, 5.0f, 2.0f};
+
+Quaternion identity = IdentityQuaternion();
+Quaternion conj = Conjugate(q1);
+Quaternion inv = Inverse(q1);
+
+Quaternion normal = Normalize(q1);
+Quaternion mul1 = Multiply(q1, q2);
+Quaternion mul2 = Multiply(q2, q1);
+
+float norm = Norm(q1);
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
@@ -140,11 +200,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
-		//Novice::ScreenPrintf(0, 0, "rotateMatrix0");
-		MatrixScreenPrintf(0, kRowHeight*5, rotateMatrix0, "rotateMatrix0");
-		MatrixScreenPrintf(0, kRowHeight*10, rotateMatrix1, "rotateMatrix1");
-		MatrixScreenPrintf(0, kRowHeight*15, rotateMatrix2, "rotateMatrix2");
-
+		ImGui::Begin("MT4_01_03");
+		ImGui::Text("identity");
+		ImGui::Text("%4.2f %4.2f %4.2f %4.2f", identity.x, identity.y, identity.z, identity.w);
+		ImGui::Text("conjugate");
+		ImGui::Text("%4.2f %4.2f %4.2f %4.2f", conj.x, conj.y, conj.z, conj.w);
+		ImGui::Text("Inverse");
+		ImGui::Text("%4.2f %4.2f %4.2f %4.2f", inv.x, inv.y, inv.z, inv.w);
+		ImGui::Text("normalize");
+		ImGui::Text("%4.2f %4.2f %4.2f %4.2f", normal.x, normal.y, normal.z, normal.w);
+		ImGui::Text("mul1");
+		ImGui::Text("%4.2f %4.2f %4.2f %4.2f", mul1.x, mul1.y, mul1.z, mul1.w);
+		ImGui::Text("mul2");
+		ImGui::Text("%4.2f %4.2f %4.2f %4.2f", mul2.x, mul2.y, mul2.z, mul2.w);
+		ImGui::Text("norm");
+		ImGui::Text("%4.2f", norm);
+		ImGui::End();
 		///
 		/// ↑描画処理ここまで
 		///
