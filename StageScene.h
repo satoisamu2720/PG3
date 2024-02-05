@@ -6,7 +6,7 @@
 class StageScene : public MyScene {
 
 public:
-	void Init() override;
+	void Initialize() override;
 	void Update() override;
 	void Draw() override;
 };

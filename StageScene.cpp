@@ -1,5 +1,5 @@
 #include "StageScene.h"
-void StageScene::Init() {}
+void StageScene::Initialize() {}
 
 void StageScene::Update() {
 	if (keys_[DIK_SPACE] && !preKeys_[DIK_SPACE]) {
