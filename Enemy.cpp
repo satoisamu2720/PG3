@@ -1,5 +1,5 @@
 #include "Enemy.h"
-#include <Windows.h>
+
 void (Enemy::* Enemy::spFuncTable[])() = {
 	&Enemy::Approach,
 	&Enemy::Shot,
@@ -11,13 +11,13 @@ void Enemy::Update() {
 
 void Enemy::Approach() {
 	printf("ê⁄ãﬂ\n");
-	Sleep(3 * 600);
+	std::this_thread::sleep_for(std::chrono::seconds(2));
 	phase_ = EnemyState::Shot;
 }
 
 void Enemy::Shot() {
 	printf("éÀåÇ\n");
-	Sleep(3 * 600);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 	phase_ = EnemyState::Leave;
 }
 
